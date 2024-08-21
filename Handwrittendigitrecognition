@@ -1,0 +1,43 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+import os
+mnist = tf.keras.datasets.mnist
+(x_train, y_train),(x_test, y_test) = mnist.load_data()
+x_train = tf.keras.utils.normalize(x_train, axis=1)
+# Use tf.keras.models.load_model to load the saved model
+model = tf.keras.models.load_model("C:/Users/Dell/Downloads/handwritten.keras")
+image_number = 1
+if os.path.exists('handwritten.keras'):
+    print("File found!")
+else:
+    print("File not found.")
+model = tf.keras.models.load_model("C:/Users/Dell/Downloads/handwritten.keras")
+try:
+    model = tf.keras.models.load_model('handwritten.keras')
+except Exception as e:
+    print(f"Error loading the model: {e}")
+image_number = 1
+while os.path.isfile(f"C:/Users/Dell/Downloads/Untitled3.png"):#replace the path 
+    try:
+        img = cv2.imread(f"C:/Users/Dell/Downloads/Untitled3.png", cv2.IMREAD_GRAYSCALE)  #replace the path
+        if img is None:
+            raise ValueError(f"Image not found or unable to read: digit{image_number}.png")
+        
+        img = cv2.resize(img, (28, 28))  # Resize to 28x28 pixels
+        img = np.invert(img)  # Invert the image colors
+        img = img / 255.0  # Normalize the image
+        img = np.array([img])  # Add batch dimension
+
+        prediction = model.predict(img)
+        predicted_digit = np.argmax(prediction)
+        print(f"This digit is probably a {predicted_digit}")
+
+        plt.imshow(img[0], cmap=plt.cm.binary)
+        plt.show()
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        image_number += 1
+
